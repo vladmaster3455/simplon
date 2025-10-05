@@ -81,9 +81,12 @@ const useIdleTimer = (onIdle, idleTime, isEnabled = true) => {
         window.removeEventListener(event, handleActivity);
       });
       
-      // Nettoyer les timers
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
+      // Nettoyer les timers - copier les refs dans des variables locales
+      const timeout = timeoutRef.current;
+      const warningTimeout = warningTimeoutRef.current;
+      
+      if (timeout) clearTimeout(timeout);
+      if (warningTimeout) clearTimeout(warningTimeout);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEnabled, handleActivity]);
