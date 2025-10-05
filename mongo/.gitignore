@@ -1,0 +1,30 @@
+# Dépendances
+node_modules/
+package-lock.json
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# Fichiers uploadés (désormais suivis par Git)
+# (uploads/ et images ne sont plus ignorés)
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+dist/
+build/

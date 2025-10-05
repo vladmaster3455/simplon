@@ -1,23 +1,77 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ============================================
+# MINIBANK - .gitignore
+# ============================================
 
-# dependencies
-/node_modules
+# Dépendances
+node_modules/
+mongo/node_modules/
 /.pnp
 .pnp.js
 
-# testing
-/coverage
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
 
-# production
-/build
-
-# misc
-.DS_Store
+# Variables d'environnement - NE JAMAIS COMMIT
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+mongo/.env
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Builds
+build/
+dist/
+.next/
+out/
+
+# Fichiers uploadés
+mongo/uploads/
+uploads/
+
+# Cache de tests
+coverage/
+.nyc_output/
+
+# Fichiers temporaires
+*.tmp
+.cache/
+.parcel-cache/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Debug
+*.log
+debug/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn
+.yarn-integrity
+
+# Production
+*.tgz
