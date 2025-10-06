@@ -3,8 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { authenticateToken } = require('./middleware');
-const upload = require('../config/upload'); // ✅ AJOUT
-const fs = require('fs'); // ✅ AJOUT
+const { upload, cloudinary } = require('../config/cloudinary'); //  NOUVELLE VERSION
+const fs = require('fs'); //  AJOUT
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'minibank_secret_key';
@@ -164,14 +164,13 @@ router.put('/profile/photo', authenticateToken, upload.single('photo'), async (r
     }
 
     // Supprimer l'ancienne photo si elle existe
-    if (user.photo) {
-      const oldPhotoPath = require('path').join(__dirname, '..', user.photo);
-      if (fs.existsSync(oldPhotoPath)) {
-        fs.unlinkSync(oldPhotoPath);
-      }
-    }
+   if (user.photo) {
+  // Extraire l'ID public de l'URL Cloudinary
+  const publicId = user.photo.split('/').slice(-2).join('/').split('.')[0];
+  await cloudinary.uploader.destroy(publicId);
+}
 
-    user.photo = `/uploads/photos/${req.file.filename}`;
+   user.photo = req.file.path;
     await user.save();
 
     res.json({

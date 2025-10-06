@@ -36,9 +36,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// SERVIR LES FICHIERS STATIQUES (photos)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // Configuration
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;

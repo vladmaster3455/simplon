@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { User } = require('../models');
 const { authenticateToken } = require('./middleware');
-const upload = require('../config/upload');
+const { upload, cloudinary } = require('../config/cloudinary');
 const fs = require('fs');
 const path = require('path');
 

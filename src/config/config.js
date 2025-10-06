@@ -34,8 +34,7 @@ const getAssetsUrl = (apiUrl) => {
  * Configuration des URLs de l'API
  */
 export const API_CONFIG = {
-  // URL de base pour les appels API (avec /serge)
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:5000/serge',
+
   
   // URL pour les assets statiques (images, fichiers) - sans /serge
   ASSETS_URL: getAssetsUrl(process.env.REACT_APP_API_URL),

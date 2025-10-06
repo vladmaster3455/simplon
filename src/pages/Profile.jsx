@@ -69,10 +69,11 @@ function Profile() {
       });
 
       // ✅ AMÉLIORATION : Ajouter un timestamp pour forcer le rechargement
-      if (userData.photo) {
-        const timestamp = new Date().getTime();
-        setPhotoUrl(`${API_BASE_URL}${userData.photo}?t=${timestamp}`);
-      } else {
+    if (userData.photo) {
+  // Cloudinary retourne déjà une URL complète
+  const timestamp = new Date().getTime();
+  setPhotoUrl(`${userData.photo}?t=${timestamp}`);
+} else {
         setPhotoUrl(null);
       }
     } catch (err) {
