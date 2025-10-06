@@ -161,7 +161,6 @@ function Profile() {
     try {
       const formDataToSend = new FormData();
 
-      // ✅ Ajout de logs pour debug
       console.log('📤 Envoi du formulaire avec:', {
         hasPhoto: !!selectedFile,
         photoName: selectedFile?.name,
@@ -188,7 +187,13 @@ function Profile() {
       
       const updatedUser = data.user;
 
+      // ✅ IMPORTANT : Mettre à jour le localStorage ET conserver le token
+      const currentToken = localStorage.getItem('token');
       localStorage.setItem('user', JSON.stringify(updatedUser));
+      if (currentToken) {
+        localStorage.setItem('token', currentToken);
+      }
+      
       setUser(updatedUser);
 
       // ✅ Forcer le rechargement de l'image avec timestamp
@@ -197,6 +202,8 @@ function Profile() {
         const newPhotoUrl = `${API_BASE_URL}${updatedUser.photo}?t=${timestamp}`;
         console.log('🖼️ Nouvelle URL photo:', newPhotoUrl);
         setPhotoUrl(newPhotoUrl);
+      } else {
+        setPhotoUrl(null);
       }
 
       setSelectedFile(null);
@@ -208,10 +215,13 @@ function Profile() {
         type: 'success' 
       });
 
-      // ✅ Recharger le profil après 500ms
+      // ✅ Déclencher un événement pour notifier les autres composants
+      window.dispatchEvent(new Event('userUpdated'));
+
+      // ✅ Recharger le profil après 1 seconde
       setTimeout(() => {
         fetchProfile();
-      }, 500);
+      }, 1000);
 
     } catch (err) {
       console.error('❌ Erreur updateProfile:', err);

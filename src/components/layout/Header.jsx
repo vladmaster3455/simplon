@@ -18,24 +18,47 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../config/api';
-import { API_CONFIG } from '../config/config';
+import { API_CONFIG } from '../../config/config';
 
 const DRAWER_WIDTH = 240;
-const API_BASE_URL = API_CONFIG.ASSETS_URL;// URL de base du backend MongoDB
+const API_BASE_URL = API_CONFIG.ASSETS_URL;
 
 function Header({ onLogout, sidebarOpen, toggleTheme, mode }) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
-  
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
 
+  // ✅ Charger la photo initiale
   useEffect(() => {
-    // Charger la photo si elle existe
-    if (user.photo) {
-      setPhotoUrl(`${API_BASE_URL}${user.photo}`);
+    updatePhoto();
+  }, []);
+
+  // ✅ Écouter les événements de mise à jour utilisateur
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      setUser(updatedUser);
+      updatePhoto();
+    };
+
+    window.addEventListener('userUpdated', handleUserUpdate);
+    
+    // Nettoyage de l'écouteur
+    return () => {
+      window.removeEventListener('userUpdated', handleUserUpdate);
+    };
+  }, []);
+
+  const updatePhoto = () => {
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    if (currentUser.photo) {
+      const timestamp = new Date().getTime();
+      setPhotoUrl(`${API_BASE_URL}${currentUser.photo}?t=${timestamp}`);
+    } else {
+      setPhotoUrl(null);
     }
-  }, [user.photo]);
+  };
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -130,6 +153,7 @@ function Header({ onLogout, sidebarOpen, toggleTheme, mode }) {
           >
             <Avatar 
               src={photoUrl}
+              key={photoUrl} // ✅ Force le re-render quand photoUrl change
               sx={{ 
                 width: { xs: 28, sm: 32 }, 
                 height: { xs: 28, sm: 32 }, 
