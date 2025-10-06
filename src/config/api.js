@@ -1,4 +1,4 @@
-// src/config/api.js - VERSION CORRIGÉE
+// src/config/api.js - VERSION CORRIGÉE POUR UPLOAD PHOTO
 import { API_CONFIG } from './config';
 
 const API_BASE_URL = API_CONFIG.BASE_URL;
@@ -8,6 +8,15 @@ const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return {
     'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : ''
+  };
+};
+
+// Helper pour les requêtes multipart (fichiers)
+const getAuthHeadersMultipart = () => {
+  const token = localStorage.getItem('token');
+  return {
+    // ⚠️ NE PAS mettre Content-Type pour FormData, le navigateur le gère automatiquement
     'Authorization': token ? `Bearer ${token}` : ''
   };
 };
@@ -47,28 +56,24 @@ export const authAPI = {
     return handleResponse(response);
   },
 
+  // ✅ CORRECTION : Utiliser getAuthHeadersMultipart()
   updateProfile: async (formData) => {
-    const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE_URL}/auth/profile`, {
       method: 'PUT',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : ''
-      },
-      body: formData
+      headers: getAuthHeadersMultipart(), // Pas de Content-Type ici
+      body: formData // FormData se charge du Content-Type
     });
     return handleResponse(response);
   },
 
+  // ✅ CORRECTION : Utiliser getAuthHeadersMultipart()
   updateProfilePhoto: async (photoFile) => {
-    const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('photo', photoFile);
 
     const response = await fetch(`${API_BASE_URL}/auth/profile/photo`, {
       method: 'PUT',
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : ''
-      },
+      headers: getAuthHeadersMultipart(), // Pas de Content-Type ici
       body: formData
     });
     return handleResponse(response);
@@ -220,7 +225,6 @@ export const usersAPI = {
 
 // API Transactions
 export const transactionsAPI = {
-  // Dépôt
   depot: async (montant, numeroCompte_destination) => {
     const response = await fetch(`${API_BASE_URL}/transactions/depot`, {
       method: 'POST',
@@ -230,7 +234,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Retrait
   retrait: async (montant, numeroCompte_source) => {
     const response = await fetch(`${API_BASE_URL}/transactions/retrait`, {
       method: 'POST',
@@ -240,7 +243,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Transfert
   transfert: async (montant, numeroCompte_destination, telephone_destinataire) => {
     const response = await fetch(`${API_BASE_URL}/transactions/transfert`, {
       method: 'POST',
@@ -250,7 +252,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Vérifier téléphone
   verifierTelephone: async (telephone) => {
     const response = await fetch(`${API_BASE_URL}/transactions/verifier-telephone`, {
       method: 'POST',
@@ -260,7 +261,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Historique
   getHistorique: async (limit = 50, page = 1) => {
     const response = await fetch(`${API_BASE_URL}/transactions/historique?limit=${limit}&page=${page}`, {
       headers: getAuthHeaders()
@@ -268,7 +268,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Détails transaction - CORRIGÉ: ajout de await
   getTransaction: async (numeroTransaction) => {
     const response = await fetch(`${API_BASE_URL}/transactions/transaction/${numeroTransaction}`, {
       headers: getAuthHeaders()
@@ -276,7 +275,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Annuler transaction - CORRIGÉ: ajout de await
   annulerTransaction: async (numeroTransaction, raison) => {
     const response = await fetch(`${API_BASE_URL}/transactions/annuler/${numeroTransaction}`, {
       method: 'POST',
@@ -286,7 +284,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Consulter solde
   getSolde: async () => {
     const response = await fetch(`${API_BASE_URL}/transactions/solde`, {
       headers: getAuthHeaders()
@@ -294,7 +291,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Statistiques (Agent uniquement)
   getStatistiques: async () => {
     const response = await fetch(`${API_BASE_URL}/transactions/statistiques`, {
       headers: getAuthHeaders()
@@ -302,7 +298,6 @@ export const transactionsAPI = {
     return handleResponse(response);
   },
 
-  // Transactions annulables (Distributeur)
   getTransactionsAnnulables: async () => {
     const response = await fetch(`${API_BASE_URL}/transactions/annulables`, {
       headers: getAuthHeaders()

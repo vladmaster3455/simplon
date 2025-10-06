@@ -21,7 +21,7 @@ import {
 import { authAPI } from '../config/api';
 import { API_CONFIG } from '../config/config';
 
-//  URL de base dynamique depuis la config
+// ✅ URL de base dynamique depuis la config
 const API_BASE_URL = API_CONFIG.ASSETS_URL;
 
 function Profile() {
@@ -45,7 +45,6 @@ function Profile() {
 
   useEffect(() => {
     fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchProfile = async () => {
@@ -69,10 +68,15 @@ function Profile() {
         motDePasse: ''
       });
 
+      // ✅ AMÉLIORATION : Ajouter un timestamp pour forcer le rechargement
       if (userData.photo) {
-        setPhotoUrl(`${API_BASE_URL}${userData.photo}`);
+        const timestamp = new Date().getTime();
+        setPhotoUrl(`${API_BASE_URL}${userData.photo}?t=${timestamp}`);
+      } else {
+        setPhotoUrl(null);
       }
     } catch (err) {
+      console.error('Erreur fetchProfile:', err);
       setMessage({ 
         text: err.message || 'Erreur lors du chargement du profil', 
         type: 'error' 
@@ -102,6 +106,12 @@ function Profile() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log('📷 Fichier sélectionné:', {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
+
       if (file.size > 5 * 1024 * 1024) {
         setMessage({ text: 'La photo ne doit pas dépasser 5MB', type: 'error' });
         return;
@@ -151,6 +161,13 @@ function Profile() {
     try {
       const formDataToSend = new FormData();
 
+      // ✅ Ajout de logs pour debug
+      console.log('📤 Envoi du formulaire avec:', {
+        hasPhoto: !!selectedFile,
+        photoName: selectedFile?.name,
+        fields: Object.keys(formData)
+      });
+
       Object.keys(formData).forEach(key => {
         if (formData[key] && key !== 'motDePasse') {
           formDataToSend.append(key, formData[key]);
@@ -163,16 +180,23 @@ function Profile() {
 
       if (selectedFile) {
         formDataToSend.append('photo', selectedFile);
+        console.log('📷 Photo ajoutée au FormData');
       }
 
       const data = await authAPI.updateProfile(formDataToSend);
+      console.log('✅ Réponse serveur:', data);
+      
       const updatedUser = data.user;
 
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
 
+      // ✅ Forcer le rechargement de l'image avec timestamp
       if (updatedUser.photo) {
-        setPhotoUrl(`${API_BASE_URL}${updatedUser.photo}`);
+        const timestamp = new Date().getTime();
+        const newPhotoUrl = `${API_BASE_URL}${updatedUser.photo}?t=${timestamp}`;
+        console.log('🖼️ Nouvelle URL photo:', newPhotoUrl);
+        setPhotoUrl(newPhotoUrl);
       }
 
       setSelectedFile(null);
@@ -184,9 +208,13 @@ function Profile() {
         type: 'success' 
       });
 
-      await fetchProfile();
+      // ✅ Recharger le profil après 500ms
+      setTimeout(() => {
+        fetchProfile();
+      }, 500);
 
     } catch (err) {
+      console.error('❌ Erreur updateProfile:', err);
       setMessage({ 
         text: err.message || 'Erreur lors de la mise à jour', 
         type: 'error' 
@@ -219,6 +247,7 @@ function Profile() {
       });
 
     } catch (err) {
+      console.error('❌ Erreur deletePhoto:', err);
       setMessage({ 
         text: err.message || 'Erreur lors de la suppression', 
         type: 'error' 
