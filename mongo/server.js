@@ -37,7 +37,7 @@ app.use(cors({
 }));
 
 // SERVIR LES FICHIERS STATIQUES (photos)
-app.use('/serge/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Configuration
 const PORT = process.env.PORT || 5000;
