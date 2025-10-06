@@ -3,6 +3,12 @@
 
 export const API_CONFIG = {
   BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:5000/serge',
+  
+  // URL pour les assets (images, fichiers) - sans /serge
+  ASSETS_URL: process.env.REACT_APP_API_URL 
+    ? process.env.REACT_APP_API_URL.replace('/serge', '')
+    : 'http://localhost:5000',
+  
   TIMEOUT: parseInt(process.env.REACT_APP_TIMEOUT) || 30000
 };
 
