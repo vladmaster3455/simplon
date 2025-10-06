@@ -18,9 +18,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../config/api';
+import { API_CONFIG } from '../config/config';
 
 const DRAWER_WIDTH = 240;
-const API_BASE_URL = 'http://localhost:5000'; // URL de base du backend MongoDB
+const API_BASE_URL = API_CONFIG.ASSETS_URL;// URL de base du backend MongoDB
 
 function Header({ onLogout, sidebarOpen, toggleTheme, mode }) {
   const navigate = useNavigate();

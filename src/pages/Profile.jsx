@@ -21,8 +21,8 @@ import {
 import { authAPI } from '../config/api';
 import { API_CONFIG } from '../config/config';
 
-// ✅ URL de base dynamique depuis la config
-const API_BASE_URL = API_CONFIG.BASE_URL.replace('/serge', '');
+//  URL de base dynamique depuis la config
+const API_BASE_URL = API_CONFIG.ASSETS_URL;
 
 function Profile() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
