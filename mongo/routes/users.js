@@ -14,7 +14,9 @@ const router = express.Router();
 router.post('/clients', authenticateToken, upload.single('photo'), async (req, res) => {
     try {
         if (req.user.typeUtilisateur !== 'Agent') {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(403).json({ 
                 error: 'Accès refusé. Seuls les agents peuvent créer des clients.' 
             });
@@ -23,7 +25,9 @@ router.post('/clients', authenticateToken, upload.single('photo'), async (req, r
         const { email, prenom, nom, telephone, nCarteIdentite, adresse, dateNaissance } = req.body;
 
         if (!email || !prenom || !nom || !telephone || !nCarteIdentite) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(400).json({ error: 'Tous les champs obligatoires doivent être renseignés' });
         }
 
@@ -32,7 +36,9 @@ router.post('/clients', authenticateToken, upload.single('photo'), async (req, r
         });
 
         if (existingUser) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             let conflictField = existingUser.email === email ? 'email' : 
                                existingUser.nCarteIdentite === nCarteIdentite ? 'carte d\'identité' : 
                                'numéro de téléphone';
@@ -72,7 +78,9 @@ router.post('/clients', authenticateToken, upload.single('photo'), async (req, r
         });
 
     } catch (error) {
-        if (req.file) fs.unlinkSync(req.file.path);
+        if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
         console.error('Erreur création client:', error);
         
         if (error.code === 11000) {
@@ -91,14 +99,18 @@ router.post('/clients', authenticateToken, upload.single('photo'), async (req, r
 router.post('/distributeurs', authenticateToken, upload.single('photo'), async (req, res) => {
     try {
         if (req.user.typeUtilisateur !== 'Agent') {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(403).json({ error: 'Accès refusé. Seuls les agents peuvent créer des distributeurs.' });
         }
 
         const { email, prenom, nom, telephone, nCarteIdentite, adresse, dateNaissance } = req.body;
 
         if (!email || !prenom || !nom || !telephone || !nCarteIdentite) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(400).json({ error: 'Tous les champs obligatoires doivent être renseignés' });
         }
 
@@ -107,7 +119,9 @@ router.post('/distributeurs', authenticateToken, upload.single('photo'), async (
         });
 
         if (existingUser) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             let conflictField = existingUser.email === email ? 'email' : 
                                existingUser.nCarteIdentite === nCarteIdentite ? 'carte d\'identité' : 
                                'numéro de téléphone';
@@ -147,7 +161,9 @@ router.post('/distributeurs', authenticateToken, upload.single('photo'), async (
         });
 
     } catch (error) {
-        if (req.file) fs.unlinkSync(req.file.path);
+        if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
         console.error('Erreur création distributeur:', error);
         
         if (error.code === 11000) {
@@ -350,7 +366,9 @@ router.get('/:id', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, upload.single('photo'), async (req, res) => {
     try {
         if (req.user.typeUtilisateur !== 'Agent') {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(403).json({ error: 'Accès refusé. Seuls les agents peuvent modifier un utilisateur.' });
         }
 
@@ -359,20 +377,26 @@ router.put('/:id', authenticateToken, upload.single('photo'), async (req, res) =
 
         // ✅ EMPÊCHER L'AGENT DE MODIFIER SON PROPRE COMPTE
         if (id === req.user._id.toString()) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(403).json({ error: 'Vous ne pouvez pas modifier votre propre compte' });
         }
 
         const user = await User.findById(id);
         if (!user) {
-            if (req.file) fs.unlinkSync(req.file.path);
+            if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
             return res.status(404).json({ error: 'Utilisateur introuvable' });
         }
 
         if (email && email !== user.email) {
             const emailExists = await User.findOne({ email, _id: { $ne: id } });
             if (emailExists) {
-                if (req.file) fs.unlinkSync(req.file.path);
+                if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
                 return res.status(400).json({ error: 'Cet email existe déjà' });
             }
         }
@@ -380,7 +404,9 @@ router.put('/:id', authenticateToken, upload.single('photo'), async (req, res) =
         if (tel && tel !== user.tel) {
             const telExists = await User.findOne({ tel, _id: { $ne: id } });
             if (telExists) {
-                if (req.file) fs.unlinkSync(req.file.path);
+                if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
                 return res.status(400).json({ error: 'Ce numéro de téléphone existe déjà' });
             }
         }
@@ -413,7 +439,9 @@ router.put('/:id', authenticateToken, upload.single('photo'), async (req, res) =
         res.json({ message: 'Utilisateur modifié avec succès', user: userData });
 
     } catch (error) {
-        if (req.file) fs.unlinkSync(req.file.path);
+        if (req.file && req.file.public_id) {
+  await cloudinary.uploader.destroy(req.file.public_id);
+}
         console.error('Erreur modification utilisateur:', error);
         res.status(500).json({ error: 'Erreur interne du serveur' });
     }
